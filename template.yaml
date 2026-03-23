@@ -1,0 +1,158 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: API para gestión de camiones - Nanuetch Backend
+
+Transform:
+  - AWS::Serverless-2016-10-31
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    Description: Entorno de despliegue (dev, prod)
+    AllowedValues:
+      - dev
+      - qa
+      - prod
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+    Runtime: nodejs24.x
+    Architectures:
+      - x86_64
+    Environment:
+      Variables:
+        CAMION_TABLE: !Ref CamionTable
+        AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
+        NODE_OPTIONS: "--enable-source-maps"
+    LoggingConfig:
+      LogFormat: JSON
+    Tags:
+      Environment: !Ref Environment
+      Proyecto: Nanuetch-Backend
+    Tracing: Active
+
+Resources:
+  # ============================================
+  # API Gateway
+  # ============================================
+  NanutechApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub nanutech-api-${Environment}
+      StageName: !Ref Environment
+      Cors:
+        AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
+      TracingEnabled: true
+      Tags:
+        Environment: !Ref Environment
+        Proyecto: Nanuetch-Backend
+
+  # ============================================
+  # DynamoDB Table
+  # ============================================
+  CamionTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      TableName: !Sub ${Environment}-camiones
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: placa
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: PlacaIndex
+          KeySchema:
+            - AttributeName: placa
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+      BillingMode: PAY_PER_REQUEST
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Proyecto
+          Value: Nanuetch-Backend
+
+  # ============================================
+  # Lambdas para Camiones
+  # ============================================
+  CamionFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${Environment}-camiones
+      CodeUri: .
+      Handler: src/handlers/camionHandler.handler
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref CamionTable
+      Environment:
+        Variables:
+          LOG_LEVEL: "info"
+      Events:
+        GetAll: # ← solo estos dos eventos
+          Type: Api
+          Properties:
+            RestApiId: !Ref NanutechApi
+            Path: /camiones
+            Method: GET
+        GetById:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NanutechApi
+            Path: /camiones/{id}
+            Method: GET
+      Tags:
+        Environment: !Ref Environment
+        Servicio: camion
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: es2022
+        Sourcemap: true
+        EntryPoints:
+          - src/handlers/camionHandler.mjs
+        External:
+          - "@aws-sdk/client-dynamodb"
+          - "@aws-sdk/lib-dynamodb"
+
+  # ============================================
+  # Application Insights
+  # ============================================
+  ApplicationResourceGroup:
+    Type: AWS::ResourceGroups::Group
+    Properties:
+      Name: !Sub ApplicationInsights-SAM-${AWS::StackName}
+      ResourceQuery:
+        Type: CLOUDFORMATION_STACK_1_0
+
+  ApplicationInsightsMonitoring:
+    Type: AWS::ApplicationInsights::Application
+    Properties:
+      ResourceGroupName: !Ref ApplicationResourceGroup
+      AutoConfigurationEnabled: true
+
+# ============================================
+# Outputs
+# ============================================
+Outputs:
+  ApiEndpoint:
+    Description: "URL del endpoint de API Gateway"
+    Value: !Sub https://${NanutechApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Environment}
+
+  CamionTableName:
+    Description: "Nombre de la tabla DynamoDB de camiones"
+    Value: !Ref CamionTable
+
+  CamionFunctionArn:
+    Description: "ARN de la función Camion"
+    Value: !GetAtt CamionFunction.Arn

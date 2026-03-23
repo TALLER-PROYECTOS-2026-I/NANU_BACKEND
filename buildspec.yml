@@ -1,0 +1,27 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+    commands:
+      - npm install
+      - pip install aws-sam-cli
+
+  pre_build:
+    commands:
+      - npm run test
+      - rm -rf ./__tests__
+      - npm prune --production
+
+  build:
+    commands:
+      - sam build
+      - sam package \
+        --s3-bucket $S3_BUCKET \
+        --output-template-file template-export.yml
+
+artifacts:
+  type: zip
+  files:
+    - template-export.yml

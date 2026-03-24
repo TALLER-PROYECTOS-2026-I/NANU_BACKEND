@@ -1,9 +1,8 @@
-import pkg from "pg";
-const { Client } = pkg;
+import { pool } from "../db/connection.js";
 
 export const getAllItemsHandler = async (event) => {
 
-  // CORS (IMPORTANTE)
+  // CORS
   if (event.httpMethod === "OPTIONS") {
     return {
       statusCode: 200,
@@ -16,23 +15,8 @@ export const getAllItemsHandler = async (event) => {
     };
   }
 
-  const client = new Client({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
-    port: 5432,
-    ssl: {
-      rejectUnauthorized: false
-    }
-  });
-
   try {
-    await client.connect();
-
-    const result = await client.query("SELECT * FROM usuarios");
-
-    await client.end();
+    const result = await pool.query("SELECT * FROM usuarios");
 
     return {
       statusCode: 200,

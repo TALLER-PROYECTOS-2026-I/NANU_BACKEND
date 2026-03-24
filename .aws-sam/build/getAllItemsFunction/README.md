@@ -1,4 +1,136 @@
 # nanu-backend
+FLUJO COMPLETO
+1. crear rama
+2. desarrollar endpoint
+3. probar local
+4. push
+5. PR → develop
+############################
+1. ESTRUCTURA DEL PROYECTO
+src/
+ ├── handlers/     # Lambdas (endpoints)
+ ├── db/           # conexión a base de datos
+ ├── services/     # lógica de negocio (opcional)
+ └── utils/        # helpers
+
+template.yaml      # definición de infraestructura (API + Lambdas)
+
+2. REGLA PRINCIPAL
+
+1 funcionalidad = 1 Lambda = 1 endpoint
+
+Ejemplo:
+
+Función	Endpoint
+getUsuarios	/usuarios
+getCamiones	/camiones
+crearCamion	/camiones (POST)
+
+3. FLUJO DE RAMAS (OBLIGATORIO)
+
+Usamos estrategia tipo GitFlow (recomendada por Amazon Web Services)
+
+Ramas:
+main       → producción
+develop    → integración
+feature/*  → trabajo individual
+
+#Crear rama
+
+git checkout develop
+git pull origin develop
+git checkout -b feature/nombre-funcionalidad
+
+4. DESARROLLO
+
+Cada desarrollador debe:
+
+1. Crear su handler
+src/handlers/get-usuarios.mjs
+2. Registrar en template.yaml
+getUsuariosFunction:
+  Type: AWS::Serverless::Function
+  Properties:
+    Handler: src/handlers/get-usuarios.getUsuariosHandler
+    Events:
+      Api:
+        Type: Api
+        Properties:
+          RestApiId: !Ref MyApi
+          Path: /usuarios
+          Method: GET
+
+5. PRUEBA LOCAL (OBLIGATORIO)
+
+Antes de subir código:
+
+sam build
+sam local start-api
+
+Probar en:
+
+http://localhost:3000/usuarios
+# o lo que salga para ustedes
+
+6. SUBIR CAMBIOS
+
+git add .
+git commit -m "feat: get usuarios"
+git push origin feature/get-usuarios
+
+7. PULL REQUEST
+
+ Siempre hacer PR hacia:
+
+develop
+
+NO MAIN
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 This project contains source code and supporting files for a serverless application that you can deploy with the AWS Serverless Application Model (AWS SAM) command line interface (CLI). It includes the following files and folders:
 

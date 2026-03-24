@@ -133,14 +133,6 @@ develop
 
 ---
 
-## 🚀 Deploy
-
-Solo una persona o CI/CD:
-
-```
-sam build
-sam deploy
-```
 
 ---
 

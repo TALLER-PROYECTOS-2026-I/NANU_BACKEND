@@ -81,3 +81,12 @@ CREATE TABLE ubicaciones_gps (
         FOREIGN KEY (camion_id) REFERENCES camiones(id)
         ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS historial_contratos (
+    id SERIAL PRIMARY KEY,
+    contrato_id INT,
+    accion VARCHAR(20) NOT NULL,
+    datos_anteriores JSONB,
+    datos_nuevos JSONB,
+    fecha_cambio TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

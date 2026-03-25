@@ -57,18 +57,69 @@ Resources:
             Path: /camiones
             Method: GET
 
-  # 🔐 LOGIN
-  postLoginFunction:
+  # ============================================
+  # 📋 MÓDULO 2: GESTIÓN DE CONTRATOS
+  # ============================================
+
+  getContratosFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: src/handlers/post-login.postLoginHandler
+      Handler: src/handlers/get-contratos.getContratosHandler
       Events:
         Api:
           Type: Api
           Properties:
             RestApiId: !Ref MyApi
-            Path: /login
+            Path: /contratos
+            Method: GET
+
+  getContratoByIdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/get-contrato-by-id.getContratoByIdHandler
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MyApi
+            Path: /contratos/{id}
+            Method: GET
+
+  crearContratoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/crear-contrato.crearContratoHandler
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MyApi
+            Path: /contratos
             Method: POST
+
+  editarContratoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/editar-contrato.editarContratoHandler
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MyApi
+            Path: /contratos/{id}
+            Method: PUT
+
+  eliminarContratoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/eliminar-contrato.eliminarContratoHandler
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MyApi
+            Path: /contratos/{id}
+            Method: DELETE
 
 Outputs:
   WebEndpoint:

@@ -1,53 +1,72 @@
-# nanu-backend
-FLUJO COMPLETO
-1. crear rama
-2. desarrollar endpoint
-3. probar local
-4. push
-5. PR → develop
-############################
-1. ESTRUCTURA DEL PROYECTO
+# 🚀 NANUTECH – Backend Guidelines
+
+Guía oficial para el desarrollo backend del proyecto.
+
+---
+
+## 🧠 Objetivo
+
+Mantener un flujo de trabajo ordenado, escalable y sin conflictos entre desarrolladores.
+
+---
+
+## 🏗️ Estructura del Proyecto
+
+```
 src/
  ├── handlers/     # Lambdas (endpoints)
  ├── db/           # conexión a base de datos
  ├── services/     # lógica de negocio (opcional)
  └── utils/        # helpers
 
-template.yaml      # definición de infraestructura (API + Lambdas)
+template.yaml      # infraestructura (API + Lambdas)
+```
 
-2. REGLA PRINCIPAL
+---
 
-1 funcionalidad = 1 Lambda = 1 endpoint
+## 🔥 Regla Principal
+
+> **1 funcionalidad = 1 Lambda = 1 endpoint**
 
 Ejemplo:
 
-Función	Endpoint
-getUsuarios	/usuarios
-getCamiones	/camiones
-crearCamion	/camiones (POST)
+| Función     | Endpoint         |
+| ----------- | ---------------- |
+| getUsuarios | /usuarios        |
+| getCamiones | /camiones        |
+| crearCamion | /camiones (POST) |
 
-3. FLUJO DE RAMAS (OBLIGATORIO)
+---
 
-Usamos estrategia tipo GitFlow (recomendada por Amazon Web Services)
+## 🌿 Flujo de Ramas
 
-Ramas:
-main       → producción
-develop    → integración
-feature/*  → trabajo individual
+```
+main       → producción  
+develop    → integración  
+feature/*  → desarrollo individual  
+```
 
-#Crear rama
+### Crear una rama
 
+```
 git checkout develop
 git pull origin develop
 git checkout -b feature/nombre-funcionalidad
+```
 
-4. DESARROLLO
+---
 
-Cada desarrollador debe:
+## 💻 Desarrollo
 
-1. Crear su handler
+### 1. Crear handler
+
+```
 src/handlers/get-usuarios.mjs
-2. Registrar en template.yaml
+```
+
+### 2. Registrar en `template.yaml`
+
+```yaml
 getUsuariosFunction:
   Type: AWS::Serverless::Function
   Properties:
@@ -59,32 +78,143 @@ getUsuariosFunction:
           RestApiId: !Ref MyApi
           Path: /usuarios
           Method: GET
+```
 
-5. PRUEBA LOCAL (OBLIGATORIO)
+---
 
-Antes de subir código:
+## 🧪 Pruebas Locales (OBLIGATORIO)
 
+```
 sam build
 sam local start-api
+```
 
 Probar en:
 
+```
 http://localhost:3000/usuarios
-# o lo que salga para ustedes
+```
 
-6. SUBIR CAMBIOS
+---
 
+## 📤 Subir Cambios
+
+```
 git add .
 git commit -m "feat: get usuarios"
 git push origin feature/get-usuarios
+```
 
-7. PULL REQUEST
+---
 
- Siempre hacer PR hacia:
+## 🔁 Pull Request
 
+Siempre hacer PR hacia:
+
+```
 develop
+```
 
-NO MAIN
+---
+
+## 🚫 Reglas Críticas
+
+### ❌ NO hacer
+
+* Push directo a `main`
+* Deploy desde tu máquina
+* Modificar código de otros
+
+### ✅ SI hacer
+
+* Commits pequeños
+* 1 feature por rama
+* Código limpio
+
+---
+
+
+---
+
+## 🌐 API Base
+
+```
+https://TU_API.execute-api.us-east-2.amazonaws.com/Prod
+```
+
+Ejemplo:
+
+```
+GET /usuarios
+GET /camiones
+```
+
+---
+
+## 🗄️ Base de Datos
+
+✔ Usuario permitido:
+
+```
+backend_user
+```
+
+❌ Prohibido:
+
+* usar `postgres`
+* conexión directa desde frontend
+
+---
+
+## 🔐 Seguridad
+
+No subir nunca:
+
+* contraseñas
+* credenciales
+* claves API
+
+---
+
+## 🧩 Convenciones
+
+| Tipo     | Formato    |
+| -------- | ---------- |
+| archivo  | kebab-case |
+| función  | camelCase  |
+| endpoint | plural     |
+
+Ejemplo:
+
+```
+get-camiones.mjs
+getCamionesHandler
+/camiones
+```
+
+---
+
+## 🧠 Buenas Prácticas
+
+* Lambdas pequeñas
+* Código reutilizable
+* Manejo de errores
+* Queries claras
+
+---
+
+## 🔄 Flujo Completo
+
+```
+1. crear rama
+2. desarrollar endpoint
+3. probar local
+4. push
+5. PR → develop
+6. deploy
+```
+
+---
 
 
 
@@ -93,11 +223,117 @@ NO MAIN
 
 
 
+## ⚙️ Requisitos de Instalación
+
+Antes de empezar, asegúrate de tener instalado lo siguiente:
 
 
+npm install dotenv
 
+---
 
+### 🟢 1. Node.js
 
+* VERSION 20
+
+Verificar instalación:
+
+```bash
+node -v
+npm -v
+```
+
+Descargar: https://nodejs.org/
+
+---
+
+### ☁️ 2. AWS CLI
+
+Necesario para desplegar el backend.
+
+Verificar:
+
+```bash
+aws --version
+```
+
+Configurar credenciales:
+
+```bash
+aws configure
+```
+
+Te pedirá:
+
+* Access Key	
+* Secret Key	
+* Region (ej: `us-east-2`)
+* Output format: `json`
+
+---
+
+### 🚀 3. AWS SAM CLI
+
+Herramienta principal para correr Lambdas localmente y hacer deploy.
+
+Verificar:
+
+```bash
+sam --version
+```
+
+Descargar: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html
+
+---
+
+---
+
+### 🗄️ 5. Cliente de Base de Datos
+
+Se recomienda usar:
+
+* DBeaver
+
+Para conectarse a PostgreSQL y ejecutar scripts.
+
+---
+
+### 📦 6. Dependencias del Proyecto
+
+Instalar dependencias:
+
+```bash
+npm install
+```
+
+---
+
+### ▶️ 7. Ejecutar el proyecto en local
+
+```bash
+sam build
+sam local start-api
+```
+
+Abrir en navegador:
+
+```bash
+http://localhost:3000
+```
+
+---
+
+## ✅ Checklist rápido
+
+Antes de programar, debes tener:
+
+* [ ] Node.js instalado
+* [ ] AWS CLI configurado
+* [ ] SAM CLI instalado
+* [ ] Docker corriendo
+* [ ] Dependencias instaladas (`npm install`)
+
+---
 
 
 

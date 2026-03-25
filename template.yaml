@@ -2,7 +2,7 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: nanu-backend
 
 Transform:
-- AWS::Serverless-2016-10-31
+  - AWS::Serverless-2016-10-31
 
 # 🔥 VARIABLES GLOBALES (CLAVE PARA EQUIPO)
 Globals:
@@ -20,7 +20,6 @@ Globals:
         DB_NAME: "postgres"
 
 Resources:
-
   # 🌐 API GLOBAL
   MyApi:
     Type: AWS::Serverless::Api
@@ -49,7 +48,7 @@ Resources:
   getCamionesFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: src/handlers/get-camiones.getCamionesHandler
+      Handler: src/handlers/get-camiones.getCamiones
       Events:
         Api:
           Type: Api

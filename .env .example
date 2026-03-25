@@ -1,0 +1,27 @@
+Porque cuando ejecutas local (ej: con sam local o pruebas en Node):
+
+👉 template.yaml no se usa automáticamente como entorno local
+
+Entonces esto en tu código:
+
+process.env.DB_HOST
+
+👉 va a ser undefined ❌
+
+Y ahí empiezan errores tipo:
+
+no conecta a DB
+internal server error
+credenciales null
+✅ Entonces ¿qué tiene que hacer el dev en .env?
+
+Solo esto 👇 (mínimo necesario para que funcione local):
+
+DB_HOST=database-demo.c56g84wquc58.us-east-2.rds.amazonaws.com
+DB_PORT=5432
+DB_USER=backend_user
+DB_PASS=Backend123!
+DB_NAME=postgres
+
+👉 Eso es TODO
+No necesita más para tu backend actual

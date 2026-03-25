@@ -1,0 +1,7 @@
+{
+  "httpMethod": "POST",
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "body": "{\"email\": \"admin@nanu.com\", \"password\": \"123456\"}"
+}

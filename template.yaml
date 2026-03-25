@@ -57,6 +57,19 @@ Resources:
             Path: /camiones
             Method: GET
 
+  # 🔐 LOGIN
+  postLoginFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/post-login.postLoginHandler
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MyApi
+            Path: /login
+            Method: POST
+
 Outputs:
   WebEndpoint:
     Description: API base URL

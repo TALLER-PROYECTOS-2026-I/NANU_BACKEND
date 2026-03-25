@@ -1,2 +1,9 @@
-node_modules
+# AWS SAM
 .aws-sam/
+aws-lambda-ie-test/
+.aws-sam-v3/
+
+# Node.js
+node_modules/
+dist/
+npm-debug.log*
